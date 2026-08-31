@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: Uses workflow + job env
         run: |
-          echo "my name is = $NAME"
+          echo "my name is a = $NAME"
 
   job2:
     runs-on: ubuntu-latest
