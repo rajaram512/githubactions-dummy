@@ -1,4 +1,4 @@
-# and this pipeline runs green on the very first push.
+# and this pipeline runs green on the very first push..
 
 name: 15 - Node CI (First CI Pipeline)
 
