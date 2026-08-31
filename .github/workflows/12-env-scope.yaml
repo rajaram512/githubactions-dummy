@@ -1,34 +1,30 @@
+
 name: 12 - Env Scopes
 
 on: workflow_dispatch
 
 env:
-  NAME: Mithran
+  APP_NAME: DemoApp          # workflow scope -> visible to ALL jobs & steps
+  STAGE: global-level
 
 jobs:
   job1:
     runs-on: ubuntu-latest
     env:
-      NAME: Munna
+      STAGE: job-level        # job scope -> overrides workflow value for this job
     steps:
       - name: Uses workflow + job env
         run: |
-          echo "my name is = $NAME"
+          echo "APP_NAME = $APP_NAME"   # DemoApp   (from workflow scope)
+          echo "STAGE    = $STAGE"      # job-level (job overrides workflow)
 
-  job2:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Uses workflow + job env
-        run: |
-          echo "my name is = $NAME"
-
-  job3:
-    runs-on: ubuntu-latest
-    env:
-      NAME: Munna
-    steps:
-      - name: Uses workflow + job env
+      - name: Step scope wins
         env:
-          NAME: Cloud Teacher
+          STAGE: step-level     # step scope -> overrides job AND workflow
         run: |
-          echo "my name is = $NAME"  
+          echo "APP_NAME = $APP_NAME"   # DemoApp     
+          echo "STAGE    = $STAGE"      # step-level     
+
+      - name: Read env inside an expression
+        if: ${{ env.STAGE == 'DemoApp' }}
+        run: echo "Expression saw APP_NAME = ${{ env.APP_NAME }}"
