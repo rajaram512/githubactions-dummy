@@ -1,0 +1,52 @@
+name: 15 - Node CI (First CI Pipeline)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    # Our app lives in sample-app/, not at the repo root.
+    # `defaults.run.working-directory` makes EVERY `run:` step in this job
+    # start inside that folder — so we write `npm install`, not `cd sample-app && npm install`.
+    #
+    # IMPORTANT: this affects `run:` steps ONLY. It does NOT apply to `uses:`
+    # steps — that's why setup-node below still needs the full path to the
+    # lockfile (paths given to an action are always relative to the repo root).
+    defaults:
+      run:
+        working-directory: sample-app
+
+    steps:
+      - name: 📥 Check out the code
+        uses: actions/checkout@v5
+
+      - name: 🟢 Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'sample-app/package-lock.json'   # from repo root, not working-directory
+
+      - name: 📦 Install dependencies
+        run: npm install
+
+      - name: 🔍 Lint
+        run: npm run lint
+
+      - name: 🧪 Run tests
+        run: npm test
+
+      - name: ✅ Summary
+        run: |
+          echo "Pipeline finished for commit ${{ github.sha }}"
+          echo "Triggered by: ${{ github.event_name }} on ${{ github.ref_name }}"
