@@ -1,0 +1,16 @@
+name: 12 - Env Scopes
+
+on: workflow_dispatch
+
+env:
+  NAME: Mithran
+
+jobs:
+  job1:
+    runs-on: ubuntu-latest
+    env:
+      NAME: Munna
+    steps:
+      - name: Uses workflow + job env
+        run: |
+          echo "my name is a = $NAME"
